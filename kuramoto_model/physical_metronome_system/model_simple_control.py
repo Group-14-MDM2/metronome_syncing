@@ -4,13 +4,14 @@ from scipy.integrate import solve_ivp as svp
 import argparse
 
 def control(Y, M):
-   return M * np.mean(Y)
+   result = M * np.sum(np.sin(Y))
+   return result
 
 def step(t, Y, K, N, M, omega):
    '''this is the step function for use in a numerical ODE'''
    new_speeds = []
    for i in range(N):
-      new_speed = omega[i] + control(Y, M), (K/N) * sum(np.sin(Y[j] - Y[i]) for j in range(N))
+      new_speed = omega[i] + control(Y, M) + (K/N) * sum(np.sin(Y[j] - Y[i]) for j in range(N))
       new_speeds.append(new_speed)
    return np.array(new_speeds)
 
@@ -21,7 +22,7 @@ def main():
    argument_parser.add_argument("-tf", type=float, default=50.0, help="What time to stop the model at.")
    argument_parser.add_argument("-num_steps", type=int, default=500, help="How many steps the solver runs for")
    argument_parser.add_argument("-coupling_strength", type=float, default=0.4, help="The coupling strength, K")
-   argument_parser.add_argument("-control_strength", type=float, default=0.2, help="How strong the controller is.")
+   argument_parser.add_argument("-control_strength", type=float, default=1, help="How strong the controller is.")
    parsed = argument_parser.parse_args()
 
    np.random.seed = 42
