@@ -10,6 +10,16 @@ The idea is that all the code here is for the general case, which will then be i
 Basically, don't change this code.
 '''
 
+def Standard_Step(t: float, 
+         Y: list[float] | np.ndarray, 
+         K: float, N: int, 
+         nat_freqs: list[float]) -> np.ndarray:
+   dYdt = []
+   for i in range(N):
+      d_theta_dt = nat_freqs[i] + K/N * sum(np.sin(Y[j] - Y[i]) for j in range(N))
+      dYdt.append(d_theta_dt)
+   return np.array(dYdt)
+
 @dataclass
 class Screen_params:
    width: int
