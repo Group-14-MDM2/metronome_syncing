@@ -67,6 +67,7 @@ class Solver:
       self.rhs = fun
       self.omega = [oscillator.omega for oscillator in oscillators]
       self.t = 0
+      self.num_evals = 0
    
    def step(self, dt) -> np.ndarray:
       '''performs one step of RK4 with the delta_t'''
@@ -78,10 +79,14 @@ class Solver:
       m4 = self.rhs(self.t + dt, Y + dt*m3, self.K, self.N, self.omega)
       Y += dt/6 * (m1 + 2*m2 + 2*m3 + m4)
       self.t += dt
+      self.num_evals += 1
       return Y
    
    def __call__(self, delta) -> np.ndarray:
       return self.step(delta)
+   
+   def __repr__(self) -> str:
+      return f"time elapsed: {self.t}, number of update calls: {self.num_evals}"
 
 class Window:
    def __init__(self, 
@@ -173,4 +178,5 @@ Number of Oscillators: {self.N} \n'''
       for oscillator in self.oscillators:
          print(oscillator)
       print("")
+      print(self.solver)
       return representation

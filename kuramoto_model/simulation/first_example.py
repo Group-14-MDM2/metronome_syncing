@@ -11,6 +11,7 @@ def main() -> None:
                                  height=800, 
                                  radius=350, 
                                  background_colour=(0, 20, 80))
+   
    model_params = Model_params(K=0.8, 
                                natural_frequencies=[0.2, 0.4, 0.5, 1], 
                                initial_angles=generate_initial_angles(N), 
