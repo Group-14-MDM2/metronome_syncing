@@ -16,8 +16,8 @@ class Oscillator:
       self.colour = np.random.randint(0, 255, 3).tolist()
 
    def draw(self) -> None:
-      w = self.window.width
-      h = self.window.height
+      w = self.window.screen_dimensions[0]
+      h = self.window.screen_dimensions[1]
       r = self.window.radius
       screen_pos = (w/2 + r*np.cos(self.theta), h/2 + r*np.sin(self.theta))
       pg.draw.circle(self.window.screen, self.colour, screen_pos, 5)
@@ -27,18 +27,23 @@ class Oscillator:
 
 
 class Solver:
-   def __init__(self, oscillators: list[Oscillator], fun, t_span: tuple[float, float], K, N) -> None:
+   def __init__(self, oscillators: list[Oscillator], fun, t_span: tuple[float, float], K: float, N: int) -> None:
       '''makes a solver for the problem, using a user defined step function.
       This step function must be of the form f(t, Y, K, N), where K and N are the coupling strength and number of oscillators.
       When this solver is called it takes as input a time and index and returns '''
+      initial_positions = [oscillator.theta for oscillator in oscillators]
+      natural_frequencies = [oscillator.omega for oscillator in oscillators]
+      print(initial_positions, natural_frequencies)
+
       self.solution = svp(fun, 
                           t_span, 
-                          [oscillator.theta for oscillator in oscillators], 
-                          dense_output=True,
-                          args=(K, N))
+                          initial_positions,
+                          args=(K, N, natural_frequencies),
+                          dense_output=True)
    
    def __call__(self, time) -> list[float]:
-      return self.solution(time)
+      return self.solution.sol(time)
+   
    def __repr__(self) -> str:
       return str(self.solution)
 
@@ -50,7 +55,7 @@ class Window:
                coupling_strength: float,
                nat_frequencies: list[float],
                start_positions: list[float],
-               step_function: function,
+               step_function,
                t_span: tuple[float, float] = (0, 50),
                delta: float = 0.001) -> None:
       
@@ -102,6 +107,11 @@ class Window:
    def update(self) -> None:
       while not self.quit() and self.t < self.t_span[1]:
          self.screen.fill(self.background_colour)
+         pg.draw.circle(self.screen, (50, 50, 50), 
+                        (self.screen_dimensions[0]//2, 
+                         self.screen_dimensions[1]//2),
+                         self.radius,
+                         width=2)
          
          # updates the solver for the new time and then updates the position of the oscillator
          current_state = self.solver(self.t)
@@ -114,7 +124,8 @@ class Window:
          self.t += self.delta
 
    def exit(self) -> None:
-      ...
+      print(self)
+      print(self.oscillators)
 
    def main(self) -> None:
       self.start()
