@@ -1,6 +1,7 @@
 import pygame as pg
 import numpy as np
 from scipy.integrate import solve_ivp as svp
+import time
 
 '''
 This is a simple library to render the Kuramoto oscillators.
@@ -27,25 +28,31 @@ class Oscillator:
 
 
 class Solver:
-   def __init__(self, oscillators: list[Oscillator], fun, t_span: tuple[float, float], K: float, N: int) -> None:
+   def __init__(self, oscillators: list[Oscillator], fun, K: float, N: int) -> None:
       '''makes a solver for the problem, using a user defined step function.
-      This step function must be of the form f(t, Y, K, N), where K and N are the coupling strength and number of oscillators.
+      This step function must be of the form f(t, Y, K, N, Omega), where K and N are the coupling strength and number of oscillators.
       When this solver is called it takes as input a time and index and returns '''
-      initial_positions = [oscillator.theta for oscillator in oscillators]
-      natural_frequencies = [oscillator.omega for oscillator in oscillators]
-      print(initial_positions, natural_frequencies)
+      self.oscillators = oscillators
+      self.K = K
+      self.N = N
+      self.rhs = fun
+      self.omega = [oscillator.omega for oscillator in oscillators]
+      self.t = 0
+   
+   def step(self, dt):
+      '''performs one step of RK4 with the delta_t'''
+      Y = np.array([oscillator.theta for oscillator in self.oscillators])
 
-      self.solution = svp(fun, 
-                          t_span, 
-                          initial_positions,
-                          args=(K, N, natural_frequencies),
-                          dense_output=True)
+      m1 = self.rhs(dt, Y, self.K, self.N, self.omega)
+      m2 = self.rhs(self.t + dt/2, Y + dt*m1/2, self.K, self.N, self.omega)
+      m3 = self.rhs(self.t + dt/2, Y + dt*m2/2, self.K, self.N, self.omega)
+      m4 = self.rhs(self.t + dt, Y + dt*m3, self.K, self.N, self.omega)
+      Y += dt/6 * (m1 + 2*m2 + 2*m3 + m4)
+      self.t += dt
+      return Y
    
-   def __call__(self, time) -> list[float]:
-      return self.solution.sol(time)
-   
-   def __repr__(self) -> str:
-      return str(self.solution)
+   def __call__(self, delta) -> list[float]:
+      return self.step(delta)
 
 class Window:
    def __init__(self, width: int, 
@@ -55,9 +62,7 @@ class Window:
                coupling_strength: float,
                nat_frequencies: list[float],
                start_positions: list[float],
-               step_function,
-               t_span: tuple[float, float] = (0, 50),
-               delta: float = 0.001) -> None:
+               step_function) -> None:
       
       assert len(nat_frequencies) == len(start_positions), "The number of natural frequencies doesn't match the number of initial positions"
 
@@ -69,10 +74,8 @@ class Window:
       self.K = coupling_strength
       self.nat_freqs = nat_frequencies
       self.start_thetas = start_positions
-      self.t_span = t_span
 
-      self.t = t_span[0]
-      self.delta = delta
+      self.t = 0
       self.oscillators = []
       self.step_function = step_function
 
@@ -102,26 +105,34 @@ class Window:
          self.oscillators.append(Oscillator(omega, theta, self))
       
       # initialises the solvers
-      self.solver = Solver(self.oscillators, self.step_function, self.t_span, self.K, self.N)
+      self.solver = Solver(self.oscillators, self.step_function, self.K, self.N)
                
    def update(self) -> None:
-      while not self.quit() and self.t < self.t_span[1]:
+      prev_time = time.perf_counter()
+      while not self.quit():
+         
+         # clears the screen and fills it in with its background colour
          self.screen.fill(self.background_colour)
+
+         # draws the circle the points move around in
          pg.draw.circle(self.screen, (50, 50, 50), 
                         (self.screen_dimensions[0]//2, 
                          self.screen_dimensions[1]//2),
                          self.radius,
                          width=2)
          
+         # finds the time since the last frame was drawn
+         current_time = time.perf_counter()
+         dt = current_time - prev_time
+
          # updates the solver for the new time and then updates the position of the oscillator
-         current_state = self.solver(self.t)
+         current_state = self.solver(dt)
          for i, oscillator in enumerate(self.oscillators):
             oscillator.theta = current_state[i]
             oscillator.draw()
 
-
+         prev_time = current_time
          pg.display.flip()
-         self.t += self.delta
 
    def exit(self) -> None:
       print(self)
