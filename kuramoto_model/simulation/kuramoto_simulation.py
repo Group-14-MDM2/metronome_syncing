@@ -43,7 +43,11 @@ class Oscillator:
 
 
 class Solver:
-   def __init__(self, oscillators: list[Oscillator], fun, K: float, N: int) -> None:
+   def __init__(self, 
+                oscillators: list[Oscillator], 
+                fun: Callable[[float, list[float], float, int, list[float]], np.ndarray], 
+                K: float, 
+                N: int) -> None:
       '''makes a solver for the problem, using a user defined step function.
       This step function must be of the form f(t, Y, K, N, Omega), where K and N are the coupling strength and number of oscillators.
       When this solver is called it takes as input a time and index and returns '''
