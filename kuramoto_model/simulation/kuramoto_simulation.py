@@ -29,7 +29,7 @@ class Oscillator:
       self.omega = nat_frequency
       self.theta = initial_pos
       self.window = window
-      self.colour = np.random.randint(0, 255, 3).tolist()
+      self.colour = np.random.randint(100, 255, 3).tolist()
 
    def draw(self) -> None:
       w = self.window.screen_dimensions[0]

@@ -11,15 +11,19 @@ def step(t: float,
       dYdt.append(d_theta_dt)
    return np.array(dYdt)
 
+def generate_initial_angles(num_angles: int) -> list[float]:
+   return np.linspace(0, 2*np.pi, num=num_angles).tolist()
+
 
 def main() -> None:
+   N = 4
    screen_params = Screen_params(width=800, 
                                  height=800, 
                                  radius=350, 
                                  background_colour=(0, 20, 80))
    model_params = Model_params(K=0.8, 
                                natural_frequencies=[0.2, 0.4, 0.5, 1], 
-                               initial_angles=[0.6, 0.8, 0.1, 0], 
+                               initial_angles=generate_initial_angles(N), 
                                step_function=step)
    simulation = Window(screen_params, 
                           model_params)
