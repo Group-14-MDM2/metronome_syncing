@@ -1,6 +1,5 @@
 import pygame as pg
 import numpy as np
-from scipy.integrate import solve_ivp as svp
 import time
 from dataclasses import dataclass
 from typing import Callable
