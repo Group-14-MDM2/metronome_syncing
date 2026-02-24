@@ -136,7 +136,6 @@ class Window:
 
    def exit(self) -> None:
       print(self)
-      print(self.oscillators)
 
    def main(self) -> None:
       self.start()
