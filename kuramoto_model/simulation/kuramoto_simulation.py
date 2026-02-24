@@ -2,12 +2,28 @@ import pygame as pg
 import numpy as np
 from scipy.integrate import solve_ivp as svp
 import time
+from dataclasses import dataclass
+from typing import Callable
 
 '''
 This is a simple library to render the Kuramoto oscillators.
 The idea is that all the code here is for the general case, which will then be imported into a new file to create the simulation.
 Basically, don't change this code.
 '''
+
+@dataclass
+class Screen_params:
+   width: int
+   height: int
+   radius: int
+   background_colour: tuple[int, int, int] = (0, 20, 80)
+
+@dataclass
+class Model_params:
+   K: float
+   natural_frequencies: list[float]
+   initial_angles: list[float]
+   step_function: Callable[[float, list[float], float, int, list[float]], np.ndarray]
 
 class Oscillator:
    def __init__(self, nat_frequency: float, initial_pos: float, window) -> None:
@@ -56,28 +72,22 @@ class Solver:
 
 class Window:
    def __init__(self, 
-               width: int, 
-               height: int,
-               radius: int,
-               background_colour: tuple[int, int, int], 
-               coupling_strength: float,
-               nat_frequencies: list[float],
-               start_positions: list[float],
-               step_function) -> None:
+               screen_params: Screen_params, 
+               model_params: Model_params) -> None:
       
-      assert len(nat_frequencies) == len(start_positions), "The number of natural frequencies doesn't match the number of initial positions"
+      assert len(model_params.natural_frequencies) == len(model_params.initial_angles), "The number of natural frequencies doesn't match the number of initial positions"
 
-      self.screen_dimensions = (width, height)
-      self.background_colour = background_colour
-      self.radius = radius
+      self.screen_dimensions = (screen_params.width, screen_params.height)
+      self.background_colour = screen_params.background_colour
+      self.radius = screen_params.radius
 
-      self.N = len(nat_frequencies)
-      self.K = coupling_strength
-      self.nat_freqs = nat_frequencies
-      self.start_thetas = start_positions
+      self.N = len(model_params.natural_frequencies)
+      self.K = model_params.K
+      self.nat_freqs = model_params.natural_frequencies
+      self.start_thetas = model_params.initial_angles
 
       self.oscillators = []
-      self.step_function = step_function
+      self.step_function = model_params.step_function
 
    def quit(self) -> bool:
       '''First checks if the window is being closed using the button
