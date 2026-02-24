@@ -9,9 +9,18 @@ Basically, don't change this code.
 '''
 
 class Oscillator:
-   def __init__(self, nat_frequency, initial_pos) -> None:
+   def __init__(self, nat_frequency: float, initial_pos: float, window) -> None:
       self.omega = nat_frequency
       self.theta = initial_pos
+      self.window = window
+      self.colour = np.random.randint(0, 255, 3).tolist()
+
+   def draw(self) -> None:
+      w = self.window.width
+      h = self.window.height
+      r = self.window.radius
+      screen_pos = (w/2 + r*np.cos(self.theta), h/2 + r*np.sin(self.theta))
+      pg.draw.circle(self.window.screen, self.colour, screen_pos, 5)
 
    def __repr__(self) -> str:
       return f"Natural Frequency: {self.omega}, Angle: {self.theta}"
@@ -35,11 +44,13 @@ class Solver:
 
 class Window:
    def __init__(self, width: int, 
-               height: int, 
+               height: int,
+               radius: int,
                background_colour: tuple[int, int, int], 
                coupling_strength: float,
                nat_frequencies: list[float],
                start_positions: list[float],
+               step_function: function,
                t_span: tuple[float, float] = (0, 50),
                delta: float = 0.001) -> None:
       
@@ -47,6 +58,7 @@ class Window:
 
       self.screen_dimensions = (width, height)
       self.background_colour = background_colour
+      self.radius = radius
 
       self.N = len(nat_frequencies)
       self.K = coupling_strength
@@ -57,6 +69,7 @@ class Window:
       self.t = t_span[0]
       self.delta = delta
       self.oscillators = []
+      self.step_function = step_function
 
    def quit(self) -> bool:
       '''First checks if the window is being closed using the button
@@ -72,18 +85,30 @@ class Window:
 
    def start(self) -> None:
       '''sets up the screen and the numerical solver'''
+
+      # initialises the screen
       pg.init()
       self.screen = pg.display.set_mode(self.screen_dimensions)
       self.screen.fill(self.background_colour)
-      self.solver = Solver(self.oscillators, lambda a, b, c, d: b, self.t_span, self.K, self.N)
       pg.display.flip()
 
+      # initialises the oscillators
       for (omega, theta) in zip(self.nat_freqs, self.start_thetas):
-         self.oscillators.append(Oscillator(omega, theta))
+         self.oscillators.append(Oscillator(omega, theta, self))
+      
+      # initialises the solvers
+      self.solver = Solver(self.oscillators, self.step_function, self.t_span, self.K, self.N)
                
    def update(self) -> None:
       while not self.quit() and self.t < self.t_span[1]:
          self.screen.fill(self.background_colour)
+         
+         # updates the solver for the new time and then updates the position of the oscillator
+         current_state = self.solver(self.t)
+         for i, oscillator in enumerate(self.oscillators):
+            oscillator.theta = current_state[i]
+            oscillator.draw()
+
 
          pg.display.flip()
          self.t += self.delta
@@ -105,11 +130,3 @@ Number of Oscillators: {self.N} \n'''
          print(oscillator)
       print("")
       return representation
-
-def main():
-   window = Window(500, 500, (0, 15, 80), 0.3, [0.3, 0.2, 0.1], [0.3, 0.2, 0.1])
-   window.main()
-
-
-if __name__ == "__main__":
-   main()
