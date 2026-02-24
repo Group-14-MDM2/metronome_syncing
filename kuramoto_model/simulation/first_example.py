@@ -2,7 +2,7 @@ import numpy as np
 from kuramoto_simulation import Window, Screen_params, Model_params
 
 def step(t: float, 
-         Y: list[float], 
+         Y: list[float] | np.ndarray, 
          K: float, N: int, 
          nat_freqs: list[float]) -> np.ndarray:
    dYdt = []

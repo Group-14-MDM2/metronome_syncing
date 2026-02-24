@@ -22,7 +22,7 @@ class Model_params:
    K: float
    natural_frequencies: list[float]
    initial_angles: list[float]
-   step_function: Callable[[float, list[float], float, int, list[float]], np.ndarray]
+   step_function: Callable[[float, list[float] | np.ndarray, float, int, list[float]], np.ndarray]
 
 class Oscillator:
    def __init__(self, nat_frequency: float, initial_pos: float, window) -> None:
@@ -45,7 +45,7 @@ class Oscillator:
 class Solver:
    def __init__(self, 
                 oscillators: list[Oscillator], 
-                fun: Callable[[float, list[float], float, int, list[float]], np.ndarray], 
+                fun: Callable[[float, list[float] | np.ndarray, float, int, list[float]], np.ndarray], 
                 K: float, 
                 N: int) -> None:
       '''makes a solver for the problem, using a user defined step function.
