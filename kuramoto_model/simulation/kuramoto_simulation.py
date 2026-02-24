@@ -55,7 +55,8 @@ class Solver:
       return self.step(delta)
 
 class Window:
-   def __init__(self, width: int, 
+   def __init__(self, 
+               width: int, 
                height: int,
                radius: int,
                background_colour: tuple[int, int, int], 
@@ -75,7 +76,6 @@ class Window:
       self.nat_freqs = nat_frequencies
       self.start_thetas = start_positions
 
-      self.t = 0
       self.oscillators = []
       self.step_function = step_function
 

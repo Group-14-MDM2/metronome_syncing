@@ -11,7 +11,7 @@ def step(t, Y, K, N, nat_freqs):
 
 
 def main():
-   simulation = Window(500, 500, 100, 
+   simulation = Window(800, 800, 350, 
                           (0, 20, 80), 
                           0.4, 
                           [0.2, 0.4, 0.5],
