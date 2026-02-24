@@ -54,7 +54,7 @@ class Solver:
       self.omega = [oscillator.omega for oscillator in oscillators]
       self.t = 0
    
-   def step(self, dt):
+   def step(self, dt) -> np.ndarray:
       '''performs one step of RK4 with the delta_t'''
       Y = np.array([oscillator.theta for oscillator in self.oscillators])
 
@@ -66,7 +66,7 @@ class Solver:
       self.t += dt
       return Y
    
-   def __call__(self, delta) -> list[float]:
+   def __call__(self, delta) -> np.ndarray:
       return self.step(delta)
 
 class Window:
