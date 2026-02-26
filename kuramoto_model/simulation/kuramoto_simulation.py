@@ -51,9 +51,9 @@ class Oscillator:
       self.colour = np.random.randint(100, 255, 3).tolist()
 
    def draw(self) -> None:
-      w = self.window.screen_dimensions[0]
-      h = self.window.screen_dimensions[1]
-      r = self.window.radius
+      w = self.window.screen_params.width
+      h = self.window.screen_params.height
+      r = self.window.screen_params.radius
       screen_pos = (w/2 + r*np.cos(self.theta), h/2 + r*np.sin(self.theta))
       pg.draw.circle(self.window.screen, self.colour, screen_pos, 5)
 
