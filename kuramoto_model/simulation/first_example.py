@@ -22,7 +22,7 @@ def generate_initial_angles(num_angles: int) -> list[float]:
 def generate_natural_frequencies(num_frequencies: int) -> list[float]:
    return np.random.uniform(0, 0.5, num_frequencies).tolist()
 
-def step(t: float, Y: list[float] | np.ndarray, K: float, N: int, nat_freqs: list[float]) -> np.ndarray:
+def noisy_step(t: float, Y: list[float] | np.ndarray, K: float, N: int, nat_freqs: list[float]) -> np.ndarray:
    dYdt = []
    var = 0.5
    for i in range(N):
@@ -39,10 +39,10 @@ def main() -> None:
                                  radius=350, 
                                  background_colour=(0, 20, 80))
    
-   model_params = Model_params(K=1, 
+   model_params = Model_params(K=0.7, 
                                natural_frequencies=generate_natural_frequencies(N), 
                                initial_angles=generate_initial_angles(N), 
-                               step_function=step)
+                               step_function=noisy_step)
    simulation = Window(screen_params, 
                           model_params,
                           collector)
@@ -54,6 +54,8 @@ def main() -> None:
 
    fig, ax = plt.subplots()
    ax.plot(times, phases)
+   ax.set_xlabel("Time (s)")
+   ax.set_ylabel("Sine(phase)")
    plt.show()
 
 if __name__ == "__main__":
