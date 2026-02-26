@@ -1,14 +1,20 @@
 import numpy as np
 from kuramoto_simulation import Solver, Window, Screen_params, Model_params, Data_Collector, Standard_Step
+from matplotlib import pyplot as plt
+from typing import Any
 
 class Collector(Data_Collector):
    def __init__(self) -> None:
       super().__init__()
-      self.time = 0
+   def start(self, solver: Solver, window: Window):
+      self.phases = np.array([oscillator.theta for oscillator in window.oscillators])
+      self.time = [solver.t]
    def collect(self, solver: Solver, window: Window):
-      self.time = solver.t
-   def get_data(self) -> float:
-      return self.time
+      self.time.append(solver.t)
+      new_phases = np.array([oscillator.theta for oscillator in window.oscillators])
+      self.phases = np.vstack((self.phases, new_phases))
+   def get_data(self) -> tuple[list[float | Any], np.ndarray]:
+      return self.time, np.sin(self.phases)
 
 def generate_initial_angles(num_angles: int) -> list[float]:
    return np.linspace(0, 2*np.pi, num=num_angles).tolist()
@@ -26,7 +32,7 @@ def step(t: float, Y: list[float] | np.ndarray, K: float, N: int, nat_freqs: lis
 
 
 def main() -> None:
-   N = 8
+   N = 50
    collector = Collector()
    screen_params = Screen_params(width=800, 
                                  height=800, 
@@ -41,7 +47,14 @@ def main() -> None:
                           model_params,
                           collector)
    simulation.main()
-   print(collector.get_data())
+   time, phases = collector.get_data()
+
+   num_times = phases.shape[0]
+   times = np.linspace(0, time[-1], num_times)
+
+   fig, ax = plt.subplots()
+   ax.plot(times, phases)
+   plt.show()
 
 if __name__ == "__main__":
    main()
