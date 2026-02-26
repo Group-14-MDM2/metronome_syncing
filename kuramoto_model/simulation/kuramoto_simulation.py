@@ -27,12 +27,21 @@ class Screen_params:
    radius: int
    background_colour: tuple[int, int, int] = (0, 20, 80)
 
-@dataclass
+
 class Model_params:
-   K: float
-   natural_frequencies: list[float]
-   initial_angles: list[float]
-   step_function: Callable[[float, list[float] | np.ndarray, float, int, list[float]], np.ndarray]
+   def __init__(self, K: float,
+               natural_frequencies: list[float],
+               initial_angles: list[float],
+               step_function: Callable[[float, list[float] | np.ndarray, float, int, list[float]], np.ndarray]) -> None:
+      self.K: float = K
+      self.natural_frequencies = natural_frequencies
+      self.initial_angles = initial_angles
+      self.step_function = step_function
+      self.N = self.get_n()
+
+   def get_n(self) -> int:
+      assert len(self.natural_frequencies) == len(self.initial_angles), "The number of natural frequencies doesn't match the number of initial positions"
+      return len(self.natural_frequencies)
 
 class Oscillator:
    def __init__(self, nat_frequency: float, initial_pos: float, window) -> None:
@@ -92,20 +101,10 @@ class Window:
    def __init__(self, 
                screen_params: Screen_params, 
                model_params: Model_params) -> None:
-      
-      assert len(model_params.natural_frequencies) == len(model_params.initial_angles), "The number of natural frequencies doesn't match the number of initial positions"
 
-      self.screen_dimensions = (screen_params.width, screen_params.height)
-      self.background_colour = screen_params.background_colour
-      self.radius = screen_params.radius
-
-      self.N = len(model_params.natural_frequencies)
-      self.K = model_params.K
-      self.nat_freqs = model_params.natural_frequencies
-      self.start_thetas = model_params.initial_angles
-
+      self.screen_params = screen_params
+      self.model_params = model_params
       self.oscillators = []
-      self.step_function = model_params.step_function
 
    def quit(self) -> bool:
       '''First checks if the window is being closed using the button
@@ -124,29 +123,29 @@ class Window:
 
       # initialises the screen
       pg.init()
-      self.screen = pg.display.set_mode(self.screen_dimensions)
-      self.screen.fill(self.background_colour)
+      self.screen = pg.display.set_mode((self.screen_params.width, self.screen_params.height))
+      self.screen.fill(self.screen_params.background_colour)
       pg.display.flip()
 
       # initialises the oscillators
-      for (omega, theta) in zip(self.nat_freqs, self.start_thetas):
+      for (omega, theta) in zip(self.model_params.natural_frequencies, self.model_params.initial_angles):
          self.oscillators.append(Oscillator(omega, theta, self))
       
       # initialises the solvers
-      self.solver = Solver(self.oscillators, self.step_function, self.K, self.N)
+      self.solver = Solver(self.oscillators, self.model_params.step_function, self.model_params.K, self.model_params.N)
                
    def update(self) -> None:
       prev_time = time.perf_counter()
       while not self.quit():
          
          # clears the screen and fills it in with its background colour
-         self.screen.fill(self.background_colour)
+         self.screen.fill(self.screen_params.background_colour)
 
          # draws the circle the points move around in
          pg.draw.circle(self.screen, (50, 50, 50), 
-                        (self.screen_dimensions[0]//2, 
-                         self.screen_dimensions[1]//2),
-                         self.radius,
+                        (self.screen_params.width//2, 
+                         self.screen_params.height//2),
+                         self.screen_params.radius,
                          width=2)
          
          # finds the time since the last frame was drawn
@@ -171,8 +170,8 @@ class Window:
       self.exit()
    
    def __repr__(self) -> str:
-      representation = f'''Coupling Strength: {self.K},\n\
-Number of Oscillators: {self.N} \n'''
+      representation = f'''Coupling Strength: {self.model_params.K},\n\
+Number of Oscillators: {self.model_params.N} \n'''
       print("")
       print("Oscillators:")
       for oscillator in self.oscillators:
