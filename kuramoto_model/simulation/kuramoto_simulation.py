@@ -2,7 +2,7 @@ import pygame as pg
 import numpy as np
 import time
 from dataclasses import dataclass
-from typing import Callable
+from typing import Callable, Any
 
 '''
 This is a simple library to render the Kuramoto oscillators.
@@ -26,6 +26,19 @@ class Screen_params:
    height: int
    radius: int
    background_colour: tuple[int, int, int] = (0, 20, 80)
+
+class Data_Collector:
+   '''This is a simple data collector, that is initialised at the start of the simulation.
+      At the end of each frame the state of the entire model as well as the solver is collected.
+      Using the method get_data() the data can be got out of the model to be used in calculations'''
+   def __init__(self) -> None:
+      ...
+   def start(self, solver: Solver, window: Window) -> None:
+      ...
+   def collect(self, solver: Solver, window: Window) -> None:
+      ...
+   def get_data(self) -> Any:
+      ...
 
 
 class Model_params:
@@ -100,10 +113,12 @@ class Solver:
 class Window:
    def __init__(self, 
                screen_params: Screen_params, 
-               model_params: Model_params) -> None:
+               model_params: Model_params,
+               data_collector: Data_Collector) -> None:
 
       self.screen_params = screen_params
       self.model_params = model_params
+      self.data_collector = data_collector
       self.oscillators = []
 
    def quit(self) -> bool:
@@ -133,6 +148,7 @@ class Window:
       
       # initialises the solvers
       self.solver = Solver(self.oscillators, self.model_params.step_function, self.model_params.K, self.model_params.N)
+      self.data_collector.start(self.solver, self)
                
    def update(self) -> None:
       prev_time = time.perf_counter()
@@ -158,6 +174,7 @@ class Window:
             oscillator.theta = current_state[i]
             oscillator.draw()
 
+         self.data_collector.collect(self.solver, self)
          prev_time = current_time
          pg.display.flip()
 

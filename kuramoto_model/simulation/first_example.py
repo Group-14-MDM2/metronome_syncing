@@ -1,5 +1,14 @@
 import numpy as np
-from kuramoto_simulation import Window, Screen_params, Model_params, Standard_Step
+from kuramoto_simulation import Solver, Window, Screen_params, Model_params, Data_Collector, Standard_Step
+
+class Collector(Data_Collector):
+   def __init__(self) -> None:
+      super().__init__()
+      self.time = 0
+   def collect(self, solver: Solver, window: Window):
+      self.time = solver.t
+   def get_data(self) -> float:
+      return self.time
 
 def generate_initial_angles(num_angles: int) -> list[float]:
    return np.linspace(0, 2*np.pi, num=num_angles).tolist()
@@ -18,6 +27,7 @@ def step(t: float, Y: list[float] | np.ndarray, K: float, N: int, nat_freqs: lis
 
 def main() -> None:
    N = 8
+   collector = Collector()
    screen_params = Screen_params(width=800, 
                                  height=800, 
                                  radius=350, 
@@ -28,8 +38,10 @@ def main() -> None:
                                initial_angles=generate_initial_angles(N), 
                                step_function=step)
    simulation = Window(screen_params, 
-                          model_params)
+                          model_params,
+                          collector)
    simulation.main()
+   print(collector.get_data())
 
 if __name__ == "__main__":
    main()
