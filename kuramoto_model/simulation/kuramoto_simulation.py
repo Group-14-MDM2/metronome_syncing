@@ -114,7 +114,7 @@ class Window:
    def __init__(self, 
                screen_params: Screen_params, 
                model_params: Model_params,
-               data_collector: Data_Collector) -> None:
+               data_collector: Data_Collector = Data_Collector()) -> None:
 
       self.screen_params = screen_params
       self.model_params = model_params
