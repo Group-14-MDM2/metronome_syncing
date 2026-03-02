@@ -3,6 +3,8 @@ from kuramoto_simulation import Solver, Window, Screen_params, Model_params, Dat
 from matplotlib import pyplot as plt
 from typing import Any
 
+
+# a data collector that gets all the times and oscillator phases to be plotted later
 class Collector(Data_Collector):
    def __init__(self) -> None:
       super().__init__()
@@ -39,7 +41,7 @@ def main() -> None:
                                  radius=350, 
                                  background_colour=(0, 20, 80))
    
-   model_params = Model_params(K=10, 
+   model_params = Model_params(K=0.4, 
                                natural_frequencies=generate_natural_frequencies(N), 
                                initial_angles=generate_initial_angles(N), 
                                step_function=noisy_step)
