@@ -34,7 +34,7 @@ def noisy_step(t: float, Y: list[float] | np.ndarray, K: float, N: int, nat_freq
 
 
 def main() -> None:
-   N = 50
+   N = 10
    collector = Collector()
    screen_params = Screen_params(width=800, 
                                  height=800, 
