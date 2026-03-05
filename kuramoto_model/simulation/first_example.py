@@ -41,10 +41,10 @@ def main() -> None:
                                  radius=350, 
                                  background_colour=(0, 20, 80))
    
-   model_params = Model_params(K=1.5, 
+   model_params = Model_params(K=0.4, 
                                natural_frequencies=generate_natural_frequencies(N), 
                                initial_angles=generate_initial_angles(N), 
-                               step_function=Standard_Step)
+                               step_function=noisy_step)
    simulation = Window(screen_params, 
                           model_params,
                           collector)
