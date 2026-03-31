@@ -65,8 +65,8 @@ def tau(q: np.ndarray, dqdt: np.ndarray) -> np.ndarray:
 # the time-step function
 
 def step(t: float, s: np.ndarray) -> np.ndarray:
-   q = s[0]
-   dqdt = s[1]
+   q = s[0, :]
+   dqdt = s[1, :]
    dqqdtt = np.linalg.inv(M(q)) @ (tau(q, dqdt) - C(q, dqdt) @ dqdt - G(q))
    return np.vstack([dqdt, dqqdtt])
 
@@ -80,7 +80,7 @@ def RK4(t_span: tuple[float, float],
    h = (tf - t0) / n
    times = [t0]
    Y = [y_0]
-   for i in range(n):
+   for _ in range(n):
       t = times[-1]
       y_k = Y[-1]
       m1 = step(t, y_k)
