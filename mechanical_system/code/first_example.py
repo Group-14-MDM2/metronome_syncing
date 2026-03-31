@@ -14,11 +14,11 @@ class model_params:
    g: float
    epsilon: float
 
-params = model_params(3,
+params = model_params(4,
                      0.25, 
                      3, 
-                     np.array([1, 1, 1]), 
-                     np.array([0.9, 0.25, 0.71]), 
+                     np.array([1, 1, 1, 1]), 
+                     np.array([0.9, 0.25, 0.35, 0.71]), 
                      9.81, 
                      1)
 
@@ -95,13 +95,20 @@ def RK4(t_span: tuple[float, float],
 
 def main():
    t0 = 0
-   tf = 30
-   n = 1000
-   y_0 = np.vstack([[0.9, 0.25, 0],
-                    [0, 0, 0]])
+   tf = 300
+   n = 10000
+   y_0 = np.vstack([[0.9, 0.25, 0.35, 0],
+                    [0, 0, 0, 0]])
    Y, times = RK4((t0, tf), n, y_0, step)
+   '''#plotting in the time domain
    phases = [y[0, :-1] for y in Y]
    plt.plot(times, phases)
+   plt.show()'''
+
+   # plotting in phase space
+   phases = [y[0, :-1] for y in Y]
+   velocities = [y[1, :-1] for y in Y]
+   plt.plot(phases, velocities)
    plt.show()
 
 
