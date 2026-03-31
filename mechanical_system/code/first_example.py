@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from dataclasses import dataclass
+from typing import Callable
 
 # setting the model parameters
 @dataclass
@@ -13,7 +14,13 @@ class model_params:
    g: float
    epsilon: float
 
-params = model_params(3, 0.25, 3, np.array([0.3, 0.25, 0.35]), np.array([0, 0.31, 0]), 9.81, 0.01)
+params = model_params(3,
+                     0.25, 
+                     3, 
+                     np.array([0.3, 0.25, 0.35]), 
+                     np.array([0, 0.31, 0]), 
+                     9.81, 
+                     0.01)
 
 # making all the matricies
 
@@ -57,11 +64,30 @@ def tau(q: np.ndarray, dqdt: np.ndarray) -> np.ndarray:
 
 # the time-step function
 
-def step(s: tuple[np.ndarray, np.ndarray]) -> tuple[np.ndarray, np.ndarray]:
+def step(t: float, s: np.ndarray) -> np.ndarray:
    q = s[0]
    dqdt = s[1]
    dqqdtt = np.linalg.inv(M(q)) @ (tau(q, dqdt) - C(q, dqdt) @ dqdt - G(q))
-   return (dqdt, dqdt)
+   return np.vstack([dqdt, dqqdtt])
 
 # using RK4 to find the solution numerically
-
+def RK4(t_span: tuple[float, float], 
+        n: int, 
+        y_0: np.ndarray, 
+        step: Callable[[float, np.ndarray], np.ndarray]) -> tuple[list[np.ndarray], list[float]]:
+   t0 = t_span[0]
+   tf = t_span[1]
+   h = (tf - t0) / n
+   times = [t0]
+   Y = [y_0]
+   for i in range(n):
+      t = times[-1]
+      y_k = Y[-1]
+      m1 = step(t, y_k)
+      m2 = step(t + h/2, y_k + m1 * h/2)
+      m3 = step(t + h/2, y_k + m2 * h/2)
+      m4 = step(t + h, y_k + m3 * h)
+      y_kp1 = y_k + h/6 * (m1 + 2*m2 + 2*m3 + m4)
+      Y.append(y_kp1)
+      times.append(t + h)
+   return Y, times
