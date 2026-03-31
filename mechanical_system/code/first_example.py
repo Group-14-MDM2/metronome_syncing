@@ -17,10 +17,10 @@ class model_params:
 params = model_params(3,
                      0.25, 
                      3, 
-                     np.array([0.3, 0.25, 0.35]), 
-                     np.array([0, 0.31, 0]), 
+                     np.array([1, 1, 1]), 
+                     np.array([1, 0.31, 0.71]), 
                      9.81, 
-                     0.01)
+                     0.5)
 
 # making all the matricies
 
@@ -46,7 +46,7 @@ def C(q: np.ndarray, dqdt: np.ndarray) -> np.ndarray:
    for i in range(params.n - 1):
       for j in range(params.n - 1):
          if i == j:
-            c[i, j] = params.m * params.lengths[j]**2 * ((q[j]/params.initial_theta[j])**2 - 1)
+            c[i, j] = params.m * params.lengths[j]**2 * params.epsilon * ((q[j]/params.initial_theta[j])**2 - 1)
    for j in range(params.n - 1):
       c[-1, j] = params.m * params.lengths[j] * dqdt[j] * np.sin(q[j])
    return c
@@ -95,12 +95,14 @@ def RK4(t_span: tuple[float, float],
 
 def main():
    t0 = 0
-   tf = 10
+   tf = 50
    n = 1000
    y_0 = np.vstack([[0.3, 0.4, 0],
                     [0, 0, 0]])
    Y, times = RK4((t0, tf), n, y_0, step)
    phases = [y[0, :] for y in Y]
+   plt.plot(times, phases)
+   plt.show()
 
 
 if __name__ == "__main__":
