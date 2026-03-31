@@ -32,10 +32,10 @@ def M(q: np.ndarray) -> np.ndarray:
       for j in range(params.n - 1):
          if i == j:
             m[i, j] = params.m * (params.lengths[i]**2)
-      m[i, -1] = m * params.lengths[i] * np.cos(q[i])
+      m[i, -1] = params.m * params.lengths[i] * np.cos(q[i])
    
    for j in range(params.n - 1):
-      m[-1, j] = m * params.lengths[j]*np.cos(q[j])
+      m[-1, j] = params.m * params.lengths[j]*np.cos(q[j])
    m[-1, -1] = params.M + params.n * params.m
    return m
 
@@ -91,3 +91,17 @@ def RK4(t_span: tuple[float, float],
       Y.append(y_kp1)
       times.append(t + h)
    return Y, times
+
+
+def main():
+   t0 = 0
+   tf = 10
+   n = 1000
+   y_0 = np.vstack([[0.3, 0.4, 0],
+                    [0, 0, 0]])
+   Y, times = RK4((t0, tf), n, y_0, step)
+   phases = [y[0, :] for y in Y]
+
+
+if __name__ == "__main__":
+   main()
