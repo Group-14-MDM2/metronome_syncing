@@ -18,9 +18,9 @@ params = model_params(3,
                      0.25, 
                      3, 
                      np.array([1, 1, 1]), 
-                     np.array([1, 0.31, 0.71]), 
+                     np.array([0.9, 0.25, 0.71]), 
                      9.81, 
-                     0.5)
+                     1)
 
 # making all the matricies
 
@@ -95,12 +95,12 @@ def RK4(t_span: tuple[float, float],
 
 def main():
    t0 = 0
-   tf = 50
+   tf = 30
    n = 1000
-   y_0 = np.vstack([[0.3, 0.4, 0],
+   y_0 = np.vstack([[0.9, 0.25, 0],
                     [0, 0, 0]])
    Y, times = RK4((t0, tf), n, y_0, step)
-   phases = [y[0, :] for y in Y]
+   phases = [y[0, :-1] for y in Y]
    plt.plot(times, phases)
    plt.show()
 
