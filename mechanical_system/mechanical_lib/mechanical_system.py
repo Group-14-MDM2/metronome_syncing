@@ -91,6 +91,9 @@ class mechanical_system:
    def plot_time_domain(self, file_path: str | None = None) -> None:
       phases = [y[0, :-1] for y in self.Y]
       fig, ax = plt.subplots()
+
+      ax.set_xlabel("Time (s)")
+      ax.set_ylabel("Phase (radians)")
       ax.plot(self.times, phases)
       if file_path != None:
          plt.savefig(file_path)
@@ -100,15 +103,18 @@ class mechanical_system:
       phases = [y[0, :-1] for y in self.Y]
       velocities = [y[1, :-1] for y in self.Y]
       fig, ax = plt.subplots()
+
+      ax.set_xlabel("Angular Velocity (radian/s)")
+      ax.set_ylabel("Phase (radians)")
       ax.plot(velocities, phases)
       if file_path != None:
          plt.savefig(file_path)
       plt.show()
    
 def main():
-   params = model_params(2.5, 30, np.array([30, 34, 0]), 9.81, 0.01)
+   params = model_params(2.5, 3, np.array([1, 1, 0]), 9.81, 0.01)
 
-   initial_conditions = np.array([[0.09, 1, 0], 
+   initial_conditions = np.array([[0.2, 1, 0], 
                                   [0, 0, 0]])
 
    mechanical_sys = mechanical_system(params, initial_conditions)
