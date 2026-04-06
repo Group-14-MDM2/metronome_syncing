@@ -20,10 +20,10 @@ class mechanical_system:
       
       assert len(params.lengths) == initial_conditions.shape[1], f"mismatch between the number of lengths given and number of initial conditions"
       
-      self.n = len(params.lengths)
-      self.params = params
+      self.n = len(params.lengths) # number of oscillators
+      self.params = params # the model parameters
       self.initial_conditions = initial_conditions
-      self.Y = [initial_conditions]
+      self.Y = [initial_conditions] # the time-series for the state vector
       self.times = []
       self.initial_theta = initial_conditions[0, :]
 
@@ -69,14 +69,24 @@ class mechanical_system:
       dqqdtt = np.linalg.inv(self.M(q)) @ (self.tau(q, dqdt) - self.C(q, dqdt) @ dqdt - self.G(q))
       return np.vstack([dqdt, dqqdtt])
    
+   def get_order(self, s: np.ndarray) -> complex:
+      '''Finds the order parameter, a complex number'''
+      q = s[0, :]
+      order = (1/self.n) * np.sum(np.exp(1j * q))
+      return order
+   
    def RK4(self, 
            t_span: tuple[float, float], 
            num_steps: int) -> None:
+      '''runs RK4 for the mechanical system in the time and for the number of steps specified'''
+
       t0 = t_span[0]
       tf = t_span[1]
       h = (tf - t0) / num_steps
+
       self.times = [t0]
       self.Y = [self.initial_conditions]
+      self.orders = [self.get_order(self.Y[0])]
       for _ in range(num_steps):
          t = self.times[-1]
          y_k = self.Y[-1]
@@ -87,6 +97,7 @@ class mechanical_system:
          y_kp1 = y_k + h/6 * (m1 + 2*m2 + 2*m3 + m4)
          self.Y.append(y_kp1)
          self.times.append(t + h)
+         self.orders.append(self.get_order(y_kp1))
    
    def plot_time_domain(self, file_path: str | None = None) -> None:
       phases = [y[0, :-1] for y in self.Y]
@@ -111,6 +122,53 @@ class mechanical_system:
          plt.savefig(file_path)
       plt.show()
    
+   def plot_order(self, style: str, file_path: str | None = None) -> None:
+      '''plots the order parameter according to the style'''
+      match style:
+         case "r":
+            fig, ax = plt.subplots()
+            r_list = [np.sqrt(order.real**2 + order.imag**2) for order in self.orders]
+            ax.plot(self.times, r_list)
+            ax.set_xlabel("Time (s)")
+            ax.set_ylabel("Coherence, r (Dimensionless)")
+            if file_path != None:
+               plt.savefig(file_path)
+            plt.show()
+         case "psi":
+            fig, ax = plt.subplots()
+            psi_list = [np.atan(order.imag/order.real) for order in self.orders]
+            ax.plot(self.times, psi_list)
+            ax.set_xlabel("Time (s)")
+            ax.set_ylabel("Mean Phase (Radians)")
+            if file_path != None:
+               plt.savefig(file_path)
+            plt.show()
+         case "phase_space":
+            fig, ax = plt.subplots()
+            psi_list = [np.atan(order.imag/order.real) for order in self.orders]
+            r_list = [np.sqrt(order.real**2 + order.imag**2) for order in self.orders]
+            ax.plot(r_list, psi_list)
+            ax.set_xlabel("Coherence, r (Dimensionless)")
+            ax.set_ylabel("Mean Phase (Radians)")
+            if file_path != None:
+               plt.savefig(file_path)
+            plt.show()
+         case "both" | "b":
+            fig, ax = plt.subplots(2, layout="constrained")
+            psi_list = [np.atan(order.imag/order.real) for order in self.orders]
+            r_list = [np.sqrt(order.real**2 + order.imag**2) for order in self.orders]
+            ax[0].plot(self.times, psi_list)
+            ax[0].set_xlabel("Time (s)")
+            ax[0].set_ylabel("Mean Phase (Radians)")
+            ax[1].plot(self.times, r_list)
+            ax[1].set_xlabel("Time (s)")
+            ax[1].set_ylabel("Coherence, r (Dimensionless)")
+            if file_path != None:
+               plt.savefig(file_path)
+            plt.show()
+         case _:
+            print("UNRECOGNISED PARAMETER - Allowed are: 'r', 'psi', 'both' (or 'b'), 'phase_space'")
+   
 def main():
    params = model_params(2.5, 3, np.array([1, 1, 0]), 9.81, 0.01)
 
@@ -122,6 +180,7 @@ def main():
    mechanical_sys.RK4((0, 100), 100)
    mechanical_sys.plot_phase_domain()
    mechanical_sys.plot_time_domain()
+   mechanical_sys.plot_order("b")
 
 
 if __name__ == "__main__":
