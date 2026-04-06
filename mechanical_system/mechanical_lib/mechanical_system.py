@@ -170,14 +170,14 @@ class mechanical_system:
             print("UNRECOGNISED PARAMETER - Allowed are: 'r', 'psi', 'both' (or 'b'), 'phase_space'")
    
 def main():
-   params = model_params(2.5, 3, np.array([1, 1, 0]), 9.81, 0.01)
+   params = model_params(2.5, 3, np.array([1, 1, 0]), 9.81, 0.1)
 
    initial_conditions = np.array([[0.2, 1, 0], 
                                   [0, 0, 0]])
 
    mechanical_sys = mechanical_system(params, initial_conditions)
 
-   mechanical_sys.RK4((0, 100), 100)
+   mechanical_sys.RK4((0, 300), 2000)
    mechanical_sys.plot_phase_domain()
    mechanical_sys.plot_time_domain()
    mechanical_sys.plot_order("b")
