@@ -75,6 +75,16 @@ class mechanical_system:
       order = np.sum(np.exp(1j * q)) / self.n
       return order
    
+   def moving_average(self, window_size: int) -> None:
+      self.average_orders = []
+      for (index, order) in enumerate(self.orders):
+         if index < window_size - 1:
+            self.average_orders.append(np.mean(self.orders[:index]))
+         elif index >= len(self.orders) - window_size:
+            self.average_orders.append(np.mean(self.orders[index:]))
+         else:
+            self.average_orders.append(np.mean(self.orders[index-window_size:index+window_size]))
+   
    def RK4(self, 
            t_span: tuple[float, float], 
            num_steps: int) -> None:
@@ -87,6 +97,7 @@ class mechanical_system:
       self.times = [t0]
       self.Y = [self.initial_conditions]
       self.orders = [self.get_order(self.Y[0])]
+
       for _ in range(num_steps):
          t = self.times[-1]
          y_k = self.Y[-1]
@@ -98,6 +109,7 @@ class mechanical_system:
          self.Y.append(y_kp1)
          self.times.append(t + h)
          self.orders.append(self.get_order(y_kp1))
+      self.moving_average(35)
    
    def plot_time_domain(self, file_path: str | None = None) -> None:
       phases = [y[0, :-1] for y in self.Y]
@@ -124,11 +136,17 @@ class mechanical_system:
    
    def plot_order(self, style: str, file_path: str | None = None) -> None:
       '''plots the order parameter according to the style'''
+
+      r_list = [np.abs(order) for order in self.orders]
+      psi_list = [np.atan(order.imag/order.real) for order in self.orders]
+      mean_r_list = [np.abs(order) for order in self.average_orders]
+      mean_psi_list = [np.atan(order.imag/order.real) for order in self.average_orders]
+
       match style:
          case "r":
             fig, ax = plt.subplots()
-            r_list = [np.abs(order) for order in self.orders]
             ax.plot(self.times, r_list)
+            ax.plot(self.times, mean_r_list)
             ax.set_xlabel("Time (s)")
             ax.set_ylabel("Coherence, r (Dimensionless)")
             ax.set_ylim(0, 1)
@@ -137,8 +155,8 @@ class mechanical_system:
             plt.show()
          case "psi":
             fig, ax = plt.subplots()
-            psi_list = [np.atan(order.imag/order.real) for order in self.orders]
             ax.plot(self.times, psi_list)
+            ax.plot(self.times, mean_psi_list)
             ax.set_xlabel("Time (s)")
             ax.set_ylabel("Mean Phase (Radians)")
             ax.set_ylim(0, 2*np.pi)
@@ -147,25 +165,21 @@ class mechanical_system:
             plt.show()
          case "phase_space":
             fig, ax = plt.subplots()
-            psi_list = [np.atan(order.imag/order.real) for order in self.orders]
-            r_list = [np.abs(order) for order in self.orders]
             ax.plot(r_list, psi_list)
             ax.set_xlabel("Coherence, r (Dimensionless)")
             ax.set_ylabel("Mean Phase (Radians)")
-            ax.set_xlim(0, 1)
-            ax.set_ylim(0, 2*np.pi)
             if file_path != None:
                plt.savefig(file_path)
             plt.show()
          case "both" | "b":
             fig, ax = plt.subplots(2, layout="constrained")
-            psi_list = [np.atan(order.imag/order.real) for order in self.orders]
-            r_list = [np.abs(order) for order in self.orders]
             ax[0].plot(self.times, psi_list)
+            ax[0].plot(self.times, mean_psi_list)
             ax[0].set_xlabel("Time (s)")
             ax[0].set_ylabel("Mean Phase (Radians)")
             ax[0].set_ylim(0, 2*np.pi)
             ax[1].plot(self.times, r_list)
+            ax[1].plot(self.times, mean_r_list)
             ax[1].set_xlabel("Time (s)")
             ax[1].set_ylabel("Coherence, r (Dimensionless)")
             ax[1].set_ylim(0, 1)
