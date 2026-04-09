@@ -72,7 +72,7 @@ class mechanical_system:
    def get_order(self, s: np.ndarray) -> complex:
       '''Finds the order parameter, a complex number'''
       q = s[0, :]
-      order = (1/self.n) * np.sum(np.exp(1j * q))
+      order = np.sum(np.exp(1j * q)) / self.n
       return order
    
    def RK4(self, 
@@ -127,10 +127,11 @@ class mechanical_system:
       match style:
          case "r":
             fig, ax = plt.subplots()
-            r_list = [np.sqrt(order.real**2 + order.imag**2) for order in self.orders]
+            r_list = [np.abs(order) for order in self.orders]
             ax.plot(self.times, r_list)
             ax.set_xlabel("Time (s)")
             ax.set_ylabel("Coherence, r (Dimensionless)")
+            ax.set_ylim(0, 1)
             if file_path != None:
                plt.savefig(file_path)
             plt.show()
@@ -140,29 +141,34 @@ class mechanical_system:
             ax.plot(self.times, psi_list)
             ax.set_xlabel("Time (s)")
             ax.set_ylabel("Mean Phase (Radians)")
+            ax.set_ylim(0, 2*np.pi)
             if file_path != None:
                plt.savefig(file_path)
             plt.show()
          case "phase_space":
             fig, ax = plt.subplots()
             psi_list = [np.atan(order.imag/order.real) for order in self.orders]
-            r_list = [np.sqrt(order.real**2 + order.imag**2) for order in self.orders]
+            r_list = [np.abs(order) for order in self.orders]
             ax.plot(r_list, psi_list)
             ax.set_xlabel("Coherence, r (Dimensionless)")
             ax.set_ylabel("Mean Phase (Radians)")
+            ax.set_xlim(0, 1)
+            ax.set_ylim(0, 2*np.pi)
             if file_path != None:
                plt.savefig(file_path)
             plt.show()
          case "both" | "b":
             fig, ax = plt.subplots(2, layout="constrained")
             psi_list = [np.atan(order.imag/order.real) for order in self.orders]
-            r_list = [np.sqrt(order.real**2 + order.imag**2) for order in self.orders]
+            r_list = [np.abs(order) for order in self.orders]
             ax[0].plot(self.times, psi_list)
             ax[0].set_xlabel("Time (s)")
             ax[0].set_ylabel("Mean Phase (Radians)")
+            ax[0].set_ylim(0, 2*np.pi)
             ax[1].plot(self.times, r_list)
             ax[1].set_xlabel("Time (s)")
             ax[1].set_ylabel("Coherence, r (Dimensionless)")
+            ax[1].set_ylim(0, 1)
             if file_path != None:
                plt.savefig(file_path)
             plt.show()

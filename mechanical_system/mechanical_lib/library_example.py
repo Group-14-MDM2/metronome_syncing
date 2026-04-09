@@ -14,6 +14,7 @@ def main():
 
    simulation.plot_phase_domain()
    simulation.plot_time_domain()
+   simulation.plot_order("b")
 
 if __name__ == "__main__":
    main()
