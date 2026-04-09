@@ -109,7 +109,7 @@ class mechanical_system:
          self.Y.append(y_kp1)
          self.times.append(t + h)
          self.orders.append(self.get_order(y_kp1))
-      self.moving_average(35)
+      self.moving_average(num_steps)
    
    def plot_time_domain(self, file_path: str | None = None) -> None:
       phases = [y[0, :-1] for y in self.Y]
