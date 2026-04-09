@@ -66,8 +66,8 @@ class mechanical_system:
    def step(self, t: float, s: np.ndarray) -> np.ndarray:
       q = s[0, :]
       dqdt = s[1, :]
-      dqqdtt = np.linalg.inv(self.M(q)) @ (self.tau(q, dqdt) - self.C(q, dqdt) @ dqdt - self.G(q))
-      return np.vstack([dqdt, dqqdtt])
+      ddqdtt = np.linalg.inv(self.M(q)) @ (self.tau(q, dqdt) - self.C(q, dqdt) @ dqdt - self.G(q))
+      return np.vstack([dqdt, ddqdtt])
    
    def get_order(self, s: np.ndarray) -> complex:
       '''Finds the order parameter, a complex number'''
