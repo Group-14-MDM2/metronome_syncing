@@ -78,7 +78,7 @@ class mechanical_system:
    def moving_average(self, window_size: int) -> None:
       self.average_orders = []
       for (index, order) in enumerate(self.orders):
-         if index < window_size - 1:
+         if index <= window_size:
             self.average_orders.append(np.mean(self.orders[:index]))
          elif index >= len(self.orders) - window_size:
             self.average_orders.append(np.mean(self.orders[index:]))

@@ -19,7 +19,7 @@ def main():
    
    simulation = mechanical_system(params, initial_conditions)
 
-   simulation.RK4((0, 600), 10000)
+   simulation.RK4((0, 60), 1000)
 
    simulation.plot_phase_domain()
    simulation.plot_time_domain()
