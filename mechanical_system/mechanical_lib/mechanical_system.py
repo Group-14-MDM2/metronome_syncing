@@ -104,8 +104,8 @@ class mechanical_system:
       fig, ax = plt.subplots()
 
       ax.set_xlabel("Time (s)")
-      ax.set_ylabel("Phase (radians)")
-      ax.plot(self.times, phases)
+      ax.set_ylabel("sin(Phase) (radians)")
+      ax.plot(self.times, np.sin(phases))
       if file_path != None:
          plt.savefig(file_path)
       plt.show()
