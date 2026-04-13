@@ -1,4 +1,4 @@
-# Linearised Control
+# PD control
 
 from mechanical_system.mechanical_lib.mechanical_system import model_params, mechanical_system
 import numpy as np
