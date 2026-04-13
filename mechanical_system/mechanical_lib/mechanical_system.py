@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from dataclasses import dataclass
-from typing import Callable
+from typing import Callable, Self
 
 # setting the model parameters
 @dataclass
@@ -17,7 +17,7 @@ class mechanical_system:
    def __init__(self, 
                 params: model_params, 
                 initial_conditions: np.ndarray,
-                tau: Callable[[np.ndarray, np.ndarray], np.ndarray] | None = None) -> None:
+                tau: Callable[[Self, np.ndarray, np.ndarray], np.ndarray] | None = None) -> None:
       
       assert len(params.lengths) == initial_conditions.shape[1], f"mismatch between the number of lengths given and number of initial conditions"
       
@@ -64,7 +64,7 @@ class mechanical_system:
    
    def tau(self, q: np.ndarray, dqdt: np.ndarray) -> np.ndarray:
       if self.tau_func != None:
-         return self.tau_func(q, dqdt)
+         return self.tau_func(self, q, dqdt)
       return np.zeros(self.n)
    
    def step(self, t: float, s: np.ndarray) -> np.ndarray:
