@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from dataclasses import dataclass
 from typing import Callable
+from mechanical_system.mechanical_lib.mechanical_system import mechanical_system, model_params
 
 # setting the model parameters
 @dataclass

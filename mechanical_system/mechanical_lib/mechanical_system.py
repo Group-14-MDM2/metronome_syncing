@@ -16,7 +16,8 @@ class model_params:
 class mechanical_system:
    def __init__(self, 
                 params: model_params, 
-                initial_conditions: np.ndarray) -> None:
+                initial_conditions: np.ndarray,
+                tau: Callable[[np.ndarray, np.ndarray], np.ndarray] | None = None) -> None:
       
       assert len(params.lengths) == initial_conditions.shape[1], f"mismatch between the number of lengths given and number of initial conditions"
       
@@ -26,6 +27,7 @@ class mechanical_system:
       self.Y = [initial_conditions] # the time-series for the state vector
       self.times = []
       self.initial_theta = initial_conditions[0, :]
+      self.tau_func = tau
 
    def M(self, q: np.ndarray) -> np.ndarray:
       m = np.zeros((self.n, self.n))
@@ -61,6 +63,8 @@ class mechanical_system:
       return g
    
    def tau(self, q: np.ndarray, dqdt: np.ndarray) -> np.ndarray:
+      if self.tau_func != None:
+         return self.tau_func(q, dqdt)
       return np.zeros(self.n)
    
    def step(self, t: float, s: np.ndarray) -> np.ndarray:
