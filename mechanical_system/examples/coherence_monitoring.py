@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from mechanical_system.mechanical_lib.mechanical_system import mechanical_system, model_params
+from mechanical_lib.mechanical_system import mechanical_system, model_params
 
 def generate_oscillators(N: int, seed: float = 42) -> tuple[np.ndarray, np.ndarray]:
    '''generates some oscillators according to a distribution'''
