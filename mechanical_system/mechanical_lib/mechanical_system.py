@@ -80,19 +80,18 @@ class mechanical_system:
       return order
    
    def moving_average(self, window_size: int) -> None:
+      '''Calculates the moving average of the order parameter'''
+
       self.average_orders = []
+
       for (index, order) in enumerate(self.orders):
-         if index < window_size:
-            self.average_orders.append(np.mean(self.orders[:index]))
-         elif index > len(self.orders) - window_size:
-            self.average_orders.append(np.mean(self.orders[index:]))
-         else:
-            self.average_orders.append(np.mean(self.orders[index-window_size:index+window_size-1]))
+         reference_index = max(index - window_size, 0)
+         self.average_orders.append(np.mean(self.orders[reference_index:index]))    
    
    def RK4(self, 
            t_span: tuple[float, float], 
            num_steps: int,
-           coherence_threshold: float | None = None,
+           coherence_threshold: float | None = 0.9,
            stop_after_coherence: bool | None = False) -> None:
       '''Runs RK4 for the mechanical system in the time and for the number of steps specified
          If a coherence threshold parameter is given, the run stops after the moving average reaches this'''
@@ -159,7 +158,7 @@ class mechanical_system:
       '''plots the order parameter according to the style'''
 
       r_list = [np.abs(order) for order in self.orders]
-      psi_list = [np.atan(order.imag/order.real) for order in self.orders]
+      psi_list = [np.atan(order.imag/order.real) for order in self.orders if order.real != 0]
       mean_r_list = [np.abs(order) for order in self.average_orders]
       mean_psi_list = [np.atan(order.imag/order.real) for order in self.average_orders]
 
