@@ -91,8 +91,11 @@ class mechanical_system:
    
    def RK4(self, 
            t_span: tuple[float, float], 
-           num_steps: int) -> None:
-      '''runs RK4 for the mechanical system in the time and for the number of steps specified'''
+           num_steps: int,
+           coherence_threshold: float | None = None,
+           stop_after_coherence: bool | None = False) -> None:
+      '''Runs RK4 for the mechanical system in the time and for the number of steps specified
+         If a coherence threshold parameter is given, the run stops after the moving average reaches this'''
 
       t0 = t_span[0]
       tf = t_span[1]
@@ -114,6 +117,20 @@ class mechanical_system:
          self.times.append(t + h)
          self.orders.append(self.get_order(y_kp1))
       self.moving_average(num_steps // 4)
+
+      if coherence_threshold != None:
+
+         # finds the first index when the coherence, r, is above the given threshold
+         coherence_index = np.argwhere(np.abs(self.average_orders) > coherence_threshold)[0]
+      else:
+         coherence_index = num_steps - 1
+      
+      if stop_after_coherence:
+         self.Y = self.Y[:coherence_index]
+         self.times = self.times[:coherence_index]
+         self.orders = self.orders[:coherence_index]
+         self.average_orders = self.average_orders[:coherence_index]
+
    
    def plot_time_domain(self, file_path: str | None = None) -> None:
       phases = [y[0, :-1] for y in self.Y]
