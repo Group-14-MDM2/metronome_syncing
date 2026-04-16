@@ -1,6 +1,6 @@
 # Linearised Control
 
-from mechanical_system.mechanical_lib.mechanical_system import model_params, mechanical_system
+from mechanical_lib.mechanical_system import model_params, mechanical_system
 import numpy as np
 import matplotlib.pyplot as plt
 from typing import Callable, Self
