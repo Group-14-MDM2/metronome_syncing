@@ -165,21 +165,23 @@ class mechanical_system:
       match style:
          case "r":
             fig, ax = plt.subplots()
-            ax.plot(self.times, r_list)
-            ax.plot(self.times, mean_r_list)
+            ax.plot(self.times, r_list, label="Coherence")
+            ax.plot(self.times, mean_r_list, label="Moving Average")
             ax.set_xlabel("Time (s)")
             ax.set_ylabel("Coherence, r (Dimensionless)")
             ax.set_ylim(0, 1)
+            fig.legend()
             if file_path != None:
                plt.savefig(file_path)
             plt.show()
          case "psi":
             fig, ax = plt.subplots()
-            ax.plot(self.times, psi_list)
-            ax.plot(self.times, mean_psi_list)
+            ax.plot(self.times, psi_list, label="Average Phase")
+            ax.plot(self.times, mean_psi_list, label="Moving Average Phase")
             ax.set_xlabel("Time (s)")
             ax.set_ylabel("Mean Phase (Radians)")
             ax.set_ylim(0, 2*np.pi)
+            fig.legend()
             if file_path != None:
                plt.savefig(file_path)
             plt.show()
@@ -188,40 +190,25 @@ class mechanical_system:
             ax.plot(r_list, psi_list)
             ax.set_xlabel("Coherence, r (Dimensionless)")
             ax.set_ylabel("Mean Phase (Radians)")
+            fig.legend()
             if file_path != None:
                plt.savefig(file_path)
             plt.show()
          case "both" | "b":
             fig, ax = plt.subplots(2, layout="constrained")
-            ax[0].plot(self.times, psi_list)
-            ax[0].plot(self.times, mean_psi_list)
+            ax[0].plot(self.times, psi_list, label="Average_Phase")
+            ax[0].plot(self.times, mean_psi_list, label="Moving Average Phase")
             ax[0].set_xlabel("Time (s)")
             ax[0].set_ylabel("Mean Phase (Radians)")
             ax[0].set_ylim(0, 2*np.pi)
-            ax[1].plot(self.times, r_list)
-            ax[1].plot(self.times, mean_r_list)
+            ax[1].plot(self.times, r_list, label="Coherence")
+            ax[1].plot(self.times, mean_r_list, label="Moving Average Coherence")
             ax[1].set_xlabel("Time (s)")
             ax[1].set_ylabel("Coherence, r (Dimensionless)")
             ax[1].set_ylim(0, 1)
+            fig.legend()
             if file_path != None:
                plt.savefig(file_path)
             plt.show()
          case _:
             print("UNRECOGNISED PARAMETER - Allowed are: 'r', 'psi', 'both' (or 'b'), 'phase_space'")
-   
-def main():
-   params = model_params(2.5, 3, np.array([1, 1, 0]), 9.81, 0.1)
-
-   initial_conditions = np.array([[0.2, 1, 0], 
-                                  [0, 0, 0]])
-
-   mechanical_sys = mechanical_system(params, initial_conditions)
-
-   mechanical_sys.RK4((0, 300), 2000)
-   mechanical_sys.plot_phase_domain()
-   mechanical_sys.plot_time_domain()
-   mechanical_sys.plot_order("b")
-
-
-if __name__ == "__main__":
-   main()
