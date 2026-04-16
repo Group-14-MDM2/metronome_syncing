@@ -20,8 +20,8 @@ def tau(self, q: np.ndarray, dqdt: np.ndarray) -> np.ndarray:
    # ADDED CONTROL PART START
    
 # 1. PD controller gains (tune to adjust sync speed)
-   Kp_metronome = 5.0  # Proportional gain for metronomes
-   Kd_metronome = 2.0  # Derivative gain for metronomes
+   Kp_metronome = 10.0  # Proportional gain for metronomes
+   Kd_metronome = 4.0  # Derivative gain for metronomes
    Kp_cart = 2.0       # Proportional gain for cart
    Kd_cart = 0.5       # Derivative gain for cart
 
@@ -35,7 +35,7 @@ def tau(self, q: np.ndarray, dqdt: np.ndarray) -> np.ndarray:
        v[i] = Kp_metronome * (q1 - q[i]) + Kd_metronome * (dq1 - dqdt[i])
 
    # The cart (last state) tracks a scaled inverse of q1
-   scale = 0.05 
+   scale = 0.1 
    v[-1] = Kp_cart * (-scale * q1 - q[-1]) + Kd_cart * (-scale * dq1 - dqdt[-1])
 
    # 3. Feedback linearization: Extract cart dynamics (last row)
@@ -57,18 +57,18 @@ def main():
    initial_conditions, lengths = generate_oscillators(N, seed)
 
    params = model_params(0.25, 
-                           3, 
+                           8, 
                            np.array([0.1, 0.3, 0.1, 1]), 
                            9.81, 
                            0.01)
          
    simulation = mechanical_system(params, initial_conditions, tau)
 
-   simulation.RK4((0, 15), 1000)
+   simulation.RK4((0, 60), 4000)
 
    simulation.plot_phase_domain()
    simulation.plot_time_domain()
-   simulation.plot_order("b")
+   simulation.plot_order("r")
 
 if __name__ == "__main__":
    main()
