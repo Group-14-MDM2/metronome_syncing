@@ -23,7 +23,7 @@ def tau(self, q: np.ndarray, dqdt: np.ndarray) -> np.ndarray:
    Kp_metronome = 10.0  # Proportional gain for metronomes
    Kd_metronome = 4.0  # Derivative gain for metronomes
    Kp_cart = 2.0       # Proportional gain for cart
-   Kd_cart = 0.5       # Derivative gain for cart
+   Kd_cart = 0.1       # Derivative gain for cart
 
    # 2. Calculate virtual control input v (desired acceleration)
    v = np.zeros(self.n)
