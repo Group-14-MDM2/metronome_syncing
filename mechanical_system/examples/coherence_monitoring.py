@@ -14,7 +14,7 @@ def generate_oscillators(N: int, seed: float = 42) -> tuple[np.ndarray, np.ndarr
 def main():
 
    # the maximum number of metronomes to investigate
-   N = 10
+   N = 30
    seed = 41
 
 
@@ -29,7 +29,7 @@ def main():
 
    
    # Initialises the batch runner
-   batch_runner = mechanical_sys_batchrunner(params_list, initial_condition_list, 0, 30, 600)
+   batch_runner = mechanical_sys_batchrunner(params_list, initial_condition_list, 0, 30, 600, 0.75)
    
    # runs the batch runner for all the parameters, finds the time at which they become coherent
    batch_runner.batch_run()
@@ -37,7 +37,7 @@ def main():
 
    # plots the time to get coherent vs the number of oscillators
    fig, ax = plt.subplots()
-   ax.plot(range(1, N+1), batch_runner.coherence_times)
+   ax.scatter(range(1, N+1), batch_runner.coherence_times)
    ax.set_xlabel("Number of Oscillators")
    ax.set_ylabel("Time to become coherence (s)")
    plt.show()
