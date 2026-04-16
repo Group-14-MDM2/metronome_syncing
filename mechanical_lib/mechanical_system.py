@@ -118,7 +118,7 @@ class mechanical_system:
 
       # finds the first index when the coherence and the time it occurs at, r, is above the given threshold
       if max(np.abs(self.average_orders) >= coherence_threshold):
-         self.coherence_index = np.argwhere(np.abs(self.average_orders) > coherence_threshold)[0]
+         self.coherence_index = np.argwhere(np.abs(self.average_orders) > coherence_threshold)[0][0]
          self.coherence_time = self.times[self.coherence_index]
       else:
          self.coherence_index = None

@@ -1,6 +1,7 @@
 PyTorchRL_mechnical_control
 kuramoto_model
 mechanical_control
+mechanical_lib
 mechanical_system
 papers
 solve_ivp model
