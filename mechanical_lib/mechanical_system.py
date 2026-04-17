@@ -18,7 +18,7 @@ class mechanical_system:
                 params: model_params, 
                 initial_conditions: np.ndarray,
                 tau: Callable[[Self, np.ndarray, np.ndarray], np.ndarray] | None = None,
-                tau_args: list[Any] | None = None) -> None:
+                tau_args: list[Any] = []) -> None:
       
       assert len(params.lengths) == initial_conditions.shape[1], f"mismatch between the number of lengths given and number of initial conditions"
       
