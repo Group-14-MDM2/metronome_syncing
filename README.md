@@ -11,7 +11,7 @@ allowing the same model to be used without having to validate it each time.
   - mechanical_control holds the code that implemented the feedback linearisation and PD control
   - PyTorchRL_mechanical_control holds the code that implements control with Reinforcement Learning
   - mech_control_energy evaluates how much energy the controller models use for given parameters
-  - kuramoto-joe.ipnyb develops the Kuramoto interpretation of the oscillating system
+  - kuramoto_model develops the Kuramoto interpretation of the oscillating system
 
 ## Explanation of Contents:
 ### Reinforcement learning:
