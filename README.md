@@ -13,14 +13,14 @@ allowing the same model to be used without having to validate it each time.
   - mech_control_energy evaluates how much energy the controller models use for given parameters
   - kuramoto-joe.ipnyb develops the Kuramoto interpretation of the oscillating system
 
-# Explanation of Contents:
-## Reinforcement learning:
+## Explanation of Contents:
+### Reinforcement learning:
 
 
-## Kuramoto:
+### Kuramoto:
 
 
-## Mechanical:
+### Mechanical:
 
 pareto_comparison.py - compares PD and FL controllers for synchronising four mechanically coupled metronomes by sweeping across controller parameters and plotting synchronisation time against control energy as a Pareto front,  optimal parameter recommendations are printed in a table for both controllers
 
