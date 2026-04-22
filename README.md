@@ -1,15 +1,3 @@
-# Files:
-## Reinforcement learning:
-
-
-## Kuramoto:
-
-
-## Mechanical:
-
-pareto_comparison.py - compares PD and FL controllers for synchronising four mechanically coupled metronomes by sweeping across controller parameters and plotting synchronisation time against control energy as a Pareto front,  optimal parameter recommendations are printed in a table for both controllers
-
-
 ## Group 14 - Metronome Syncing
 
 ### About this Project
@@ -24,3 +12,15 @@ allowing the same model to be used without having to validate it each time.
   - PyTorchRL_mechanical_control holds the code that implements control with Reinforcement Learning
   - mech_control_energy evaluates how much energy the controller models use for given parameters
   - kuramoto-joe.ipnyb develops the Kuramoto interpretation of the oscillating system
+
+# Explanation of Contents:
+## Reinforcement learning:
+
+
+## Kuramoto:
+
+
+## Mechanical:
+
+pareto_comparison.py - compares PD and FL controllers for synchronising four mechanically coupled metronomes by sweeping across controller parameters and plotting synchronisation time against control energy as a Pareto front,  optimal parameter recommendations are printed in a table for both controllers
+
