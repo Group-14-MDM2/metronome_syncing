@@ -14,8 +14,6 @@ allowing the same model to be used without having to validate it each time.
   - kuramoto_model develops the Kuramoto interpretation of the oscillating system, includes basic model, and adaptive rule to simulate control, with energy/time tradeoffs for 2, and many oscillators.
 
 ## Explanation of Contents:
-### Reinforcement learning:
-
 
 ### Kuramoto:
 Looks at system evolution according to the Kuramoto model for 2 oscillators, and arbitrarily many oscillators, exploring effect of coupling strength parameter K. Introduces adaptive rule for K to moderate energy spend and synchronise faster, tuned by some arbitrary parameter. Synchronisation time against energy spend plotted for values of this parameter, for a worst case initial setup.
